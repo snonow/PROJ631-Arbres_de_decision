@@ -8,42 +8,24 @@
 
 #include "lecture_S_app.cpp"
 
+using namespace std;
+
 struct Noeud {
-private:
-    std::string value;
-    std::vector<BrancheId3> branches;
+    string value;
+    vector<BrancheId3> branches;
 
-public:
-    Noeud(const std::string& val) : value(val) {}
-
-    std::string getValue() const {
-        return this->value;
-    }
+    Noeud(const string& val) : value(val) {}
 
     void ajouterBranche(const BrancheId3& branche) {
         this->branches.push_back(branche);
     }
-
-    std::vector<BrancheId3> getBranches() const {
-        return this->branches;
-    }
 };
 
 struct BrancheId3 {
-private:
     Noeud* noeud_arrive;
-    std::string valeur_branche;
+    string valeur_branche;
 
-public:
-    BrancheId3(Noeud* arrive, const std::string& val) : noeud_arrive(arrive), valeur_branche(val) {}
-
-    Noeud* getNoeud_arrive() const {
-        return this->noeud_arrive;
-    }
-
-    std::string getValeur_branche() const {
-        return this->valeur_branche;
-    }
+    BrancheId3(Noeud* arrive, const string& val) : noeud_arrive(arrive), valeur_branche(val) {}
 
     void setNoeud_arrive(Noeud& node) {
         this->noeud_arrive = &node;
