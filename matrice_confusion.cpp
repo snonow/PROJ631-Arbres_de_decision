@@ -7,6 +7,8 @@
 #include <map>
 #include <cmath>
 
+#include "implementation_id3.cpp"
+
 using namespace std;
 
 // Fonction pour prédire la classe d'un exemple en traversant l'arbre de décision
@@ -25,7 +27,7 @@ string predire_classe(const Node& racine, const vector<string>& exemple) {
 }
 
 // Fonction pour déterminer la matrice de confusion en apprentissage Mapp
-vector<vector<int>> determiner_matrice_confusion_apprentissage(const S_app& donnees, const Node& arbre) {
+vector<vector<int>> determiner_matrice_confusion_apprentissage(const vector<vector<string> >& donnees, const Arbre& arbre) {
     // Initialiser la matrice de confusion avec des zéros
     vector<string> classes;
     for (size_t i = 0; i < donnees.data.size(); ++i) {
@@ -39,6 +41,22 @@ vector<vector<int>> determiner_matrice_confusion_apprentissage(const S_app& donn
     for (size_t i = 0; i < donnees.data.size(); ++i) {
         string classe_predite = predire_classe(arbre, donnees.data[i]);
         int ligne = distance(classes.begin(), find(classes.begin(), classes.end(), donnees.data[i].back()));
+        int colonne = distance(classes.begin(), find(classes.begin(), classes.end(), classe_predite));
+        Mapp[ligne][colonne]++;
+    }
+
+    return Mapp;
+}
+
+// Fonction pour déterminer la matrice de confusion en apprentissage Mapp
+vector<vector<int> > determiner_matrice_confusion_apprentissage(const vector<vector<string> >& data, const Arbre& arbre) {
+    // Initialiser la matrice de confusion avec des zéros
+    vector<vector<int> > classes = {{0,0},{0,0}};
+
+    // Prédire les classes pour chaque exemple d'apprentissage et mettre à jour la matrice de confusion
+    for (size_t i = 0; i < data.size(); ++i) {
+        string classe_predite = predire_classe(arbre, data[-1]);
+        int ligne = distance(classes.begin(), find(classes.begin(), classes.end(), data[i].back()));
         int colonne = distance(classes.begin(), find(classes.begin(), classes.end(), classe_predite));
         Mapp[ligne][colonne]++;
     }

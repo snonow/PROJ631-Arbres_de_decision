@@ -112,40 +112,65 @@ public:
         }
     }
 
-    double calculerEntropie(const vector<vector<string> >& data) {
-        unordered_map<string, int> classCount;
-
-        for (const auto& example : data) {
-            classCount[example.back()]++;
+    vector<double> calcul_entropie_sous_ensemble(const vector<vector<string> >& sous_ensemble) {
+        double nb_yes = 0;
+        double nb_no = 0;
+        for (vector<vector<string> >::const_iterator it = sous_ensemble.begin(); it != sous_ensemble.end(); ++it) {
+            if ((*it).back() == "yes") {
+                nb_yes++;
+            } else {
+                nb_no++;
+            }
         }
+        double nb_donnes = nb_no + nb_yes;
+        double p_nb_yes = nb_yes / nb_donnes;
+        double p_nb_no = nb_no / nb_donnes;
+        double entropie_sous_ensemble = -(p_nb_yes * log2(p_nb_yes) + p_nb_no * log2(p_nb_no));
+        vector<double> resultats(3);
+        resultats[0] = entropie_sous_ensemble;
+        resultats[1] = nb_no;
+        resultats[2] = nb_yes;
 
-        int totalCount = data.size();
-        double entropy = 0.0;
-
-        for (const auto& pair : classCount) {
-            double proportion = static_cast<double>(pair.second) / totalCount;
-            entropy -= proportion * log2(proportion);
-        }
-
-        return entropy;
+        return resultats;
     }
 
-    double calculerGainAttribut(const string& attribute, const vector<vector<string> >& data) {
-        unordered_map<string, vector<vector<string> > > attributeValues;
+    vector<double> calcul_gain_attributs(const vector<vector<string>>& data, const map<string, set<string>>& attributes_to_values, const vector<string>& attributes) {
+        vector<double> gain_attributs;
 
-        for (const auto& example : data) {
-            attributeValues[example[attribute]].push_back(example);
+        // Parcourir chaque attribut, sauf le dernier (la classe cible)
+        for (vector<string>::const_iterator attribut_it = attributes.begin(); attribut_it != prev(attributes.end()); ++attribut_it) {
+            double somme_entropies = 0;
+
+            // Parcourir les valeurs possibles de l'attribut
+            for (set<string>::const_iterator possible_value_it = attributes_to_values.at(*attribut_it).begin(); possible_value_it != attributes_to_values.at(*attribut_it).end(); ++possible_value_it) {
+                vector<vector<string>> sous_ensemble;
+
+                // Créer le sous-ensemble associé à la valeur possible de l'attribut
+                for (vector<vector<string>>::const_iterator donnees_it = data.begin(); donnees_it != data.end(); ++donnees_it) {
+                    // Vérifier si la dernière valeur de la ligne correspond à la valeur possible de l'attribut
+                    if ((*donnees_it).back() == *possible_value_it) {
+                        sous_ensemble.push_back(*donnees_it);
+                    }
+                }
+
+                // Calculer l'entropie du sous-ensemble
+                vector<double> resultats_entropie = calcul_entropie_sous_ensemble(sous_ensemble);
+                double entropie_sous_ensemble = resultats_entropie[0];
+                double nb_no = resultats_entropie[1];
+                double nb_yes = resultats_entropie[2];
+
+                // Calculer la somme des entropies pondérées
+                if (nb_no != 0.0 && nb_yes != 0) {
+                    somme_entropies += ((nb_no + nb_yes) / data.size()) * entropie_sous_ensemble;
+                }
+            }
+
+            // Calculer le gain pour cet attribut
+            double gain = attributes_to_values.size() - somme_entropies;
+            gain_attributs.push_back(gain);
         }
 
-        double totalEntropy = calculerEntropie(data);
-        double gain = totalEntropy;
-
-        for (const auto& pair : attributeValues) {
-            double weight = static_cast<double>(pair.second.size()) / data.size();
-            gain -= weight * calculerEntropie(pair.second);
-        }
-
-        return gain;
+        return gain_attributs;
     }
 
     string trouverClasseMajoritaire(const vector<vector<string> >& data) {
