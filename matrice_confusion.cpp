@@ -12,7 +12,8 @@
 using namespace std;
 
 // Fonction pour prédire la classe d'un exemple en traversant l'arbre de décision
-string predire_classe(const Node& racine, const vector<string>& exemple) {
+string predire_classe(const Arbre& arbre, const vector<string>& exemple) {
+    Noeud racine = arbre.racine;
     if (racine.classe != "") {
         return racine.classe;
     }

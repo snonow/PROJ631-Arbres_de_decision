@@ -51,10 +51,8 @@ public:
 };
 
 class Arbre {
-private:
     Noeud* racine;
 
-public:
     Arbre() : racine(nullptr) {}
 
     Arbre(const S_app& donnees) {
@@ -209,7 +207,7 @@ public:
         afficherArbre(this->racine, "");
     }
 
-private:
+    private:
     void afficherArbre(Noeud* noeud, const string& prefix) {
         if (noeud == nullptr) {
             return;
