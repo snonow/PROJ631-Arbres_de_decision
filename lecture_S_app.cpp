@@ -149,11 +149,3 @@ struct S_app {
         return gain_attributs;
     }
 };
-
-int main() {
-    S_app data;
-
-    vector<double> calcul_entropie_sous_ensemble = data.calcul_gain_attributs();
-
-    return 0;
-}
