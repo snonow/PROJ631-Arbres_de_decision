@@ -6,10 +6,11 @@
 #include <set>
 #include <map>
 
-#include "lecture_S_app.cpp"
+#include "lecture_S_app.hpp"
 
 using namespace std;
 
+struct BrancheId3;
 struct Noeud {
     string value;
     vector<BrancheId3> branches;
@@ -52,7 +53,7 @@ class Arbre {
         for (const auto& value : possible_values[attributs_name[maxGainIndex]]) {
             BrancheId3 branche(this->racine, value);
             this->racine->ajouterBranche(branche);
-            vector<vector<string>> sous_ensemble;
+            vector<vector<string> > sous_ensemble;
             for (const auto& exemple : data_app) {
                 if (exemple[maxGainIndex] == value) {
                     sous_ensemble.push_back(exemple);
@@ -114,7 +115,7 @@ class Arbre {
         return resultats;
     }
 
-    vector<double> calcul_gain_attributs(const vector<vector<string>>& data, const map<string, set<string>>& attributes_to_values, const vector<string>& attributes) {
+    vector<double> calcul_gain_attributs(const vector<vector<string> >& data, const map<string, set<string> >& attributes_to_values, const vector<string>& attributes) {
         vector<double> gain_attributs;
 
         // Parcourir chaque attribut, sauf le dernier (la classe cible)
@@ -123,10 +124,10 @@ class Arbre {
 
             // Parcourir les valeurs possibles de l'attribut
             for (set<string>::const_iterator possible_value_it = attributes_to_values.at(*attribut_it).begin(); possible_value_it != attributes_to_values.at(*attribut_it).end(); ++possible_value_it) {
-                vector<vector<string>> sous_ensemble;
+                vector<vector<string> > sous_ensemble;
 
                 // Créer le sous-ensemble associé à la valeur possible de l'attribut
-                for (vector<vector<string>>::const_iterator donnees_it = data.begin(); donnees_it != data.end(); ++donnees_it) {
+                for (vector<vector<string> >::const_iterator donnees_it = data.begin(); donnees_it != data.end(); ++donnees_it) {
                     // Vérifier si la dernière valeur de la ligne correspond à la valeur possible de l'attribut
                     if ((*donnees_it).back() == *possible_value_it) {
                         sous_ensemble.push_back(*donnees_it);
@@ -189,15 +190,14 @@ class Arbre {
         afficherArbre(this->racine, "");
     }
 
-    private:
     void afficherArbre(Noeud* noeud, const string& prefix) {
         if (noeud == nullptr) {
             return;
         }
 
-        cout << prefix << noeud->getValue() << endl;
+        cout << prefix << noeud->value << endl;
 
-        for (const auto& branche : noeud->getBranches()) {
+        for (const auto& branche : noeud->branche) {
             afficherArbre(branche.getNoeud_arrive(), prefix + "  ");
         }
     }
